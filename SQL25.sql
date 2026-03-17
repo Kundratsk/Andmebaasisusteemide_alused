@@ -255,6 +255,204 @@ SELECT SUM(cast(Salary as int)) FROM Employees
 --miinimum palga saaja
 select min(cast(Salary as int)) from Employees
 
----
+--- rida 251
+--- 4 tund
+--- 17.03.26
+--teeme left join päringu
+select Location, sum(cast(Salary as int)) as TotalSalary
+from Employees
+left join Department
+on Employees.DepartmentId = Department.Id
+group by Location -- ühe kuu palga fond linnade lõikes
+
+--teeme veeru nimega City Employees tabelisse
+--nvarchar 30
+alter table Employees
+add City nvarchar(30)
+
+select * from Employees
+
+--peale selecti tulevad veergude nimed
+select City, Gender, sum(cast(Salary as int)) as TotalSalary 
+--tabelist nimega Employees ja mis on grupitatud City ja Gender järgi
+from Employees group by City, Gender 
+
+--oleks vaja, et linnad oleksid tähestikulises järjekorras
+select City, Gender, sum(cast(Salary as int)) as TotalSalary 
+from Employees group by City, Gender 
+order by City
+--order by järjestab linnad tähestikuliselt
+--aga kui on nullid, siis need tulevad kõige ette
+
+--loeb ära mitu rida on tabelis Employees
+-- * asemele võib panna ka veeru nime,
+--aga siis loeb ainult selle veeru väärtused, mis ei ole nullid
+select COUNT(*) from Employees
+
+--Mitu töötajat on soo ja linna kaupa
+select City, Gender, sum(cast(Salary as int)) as TotalSalary,
+count(Id) as [Total Employee(s)]
+from Employees
+group by City, Gender
+
+-- kuvab ainult kõik mehed linnade kaupa
+select City, Gender, sum(cast(Salary as int)) as TotalSalary,
+count(Id) as [Total Employee(s)]
+from Employees
+where Gender = 'Male'
+group by City, Gender
+
+--sama tulemus, aga kasutage having klauslit
+select City, Gender, sum(cast(Salary as int)) as TotalSalary,
+count(Id) as [Total Employee(s)]
+from Employees
+group by City, Gender
+having Gender = 'Male'
+
+--näitab meile ainult need töötajad, kellel on palga summa üle 4000
+select * from Employees 
+where sum(cast(Salary as int) > 4000
+
+select Name, City, sum(cast(Salary as int)) as TotalSalary,
+count(Id) as [Total Employee(s)]
+from Employees
+group by Salary, City, Name
+having sum(cast(Salary as int)) > 4000
+
+--loome tabeli, milles hakatakse automaatselt nummerdama Id-d
+create table Test1
+(
+Id int identity(1,1) primary key,
+Value nvarchar(30)
+)
+
+insert into Test1 values('x')
+select * from Test1
+
+--kustutame veeru nimega City Employees tabelist
+ alter table Employees
+ drop column City
+
+ --inner join
+ --kuvab neid, kellel on DepartmentName all olemas väärtus
+ select Name, Gender, Salary, DepartmentName
+ from Employees
+ inner join Department
+ on Employees.DepartmentId = Department.Id
+
+ select * from Employees
+ select * from Department
+
+ --left join
+ --kuvab kõik read Employees tabelist,
+ --aga DepartmentName näitab ainult siis, kui on olemas
+ select * from Employees
+ left join Department
+ on Employees.DepartmentId = Department.Id
+
+ --right join
+select * from Employees --vasakpoolne tabel
+right join Department --parempoolne tabel
+on Employees.DepartmentId = Department.Id
+--right join
+--kuvab kõik read department tabelist
+--aga name näitab ainult siis ui on olemas väärtus DepartmentId-s, mis on sama 
+--Department tabeli Id-ga
+select Name, Gender, Salary, DepartmentName
+from Employees
+right join Department
+on Employees.DepartmentId = Department.Id
+
+--full outer join ja full join on sama asi
+--kuvab kõik read mõlemast tabelist
+--aga kui ei ole vastet, siis näitab nulli
+
+select Name, Gender, Salary, DepartmentName
+from Employees
+full join Department
+on Employees.DepartmentId = Department.Id
+
+--cross join
+--kuvab kõik read mõlemast tabelist, aga ei võta aluseks mingit veergu,
+--vaid lihtsalt kombineerib kõik read omavahel
+--kasutatakse harva, aga kui on vaja kombineerida kõiki
+--võimalikke kombinatsioone kahe tabeli vahel, siis võib kasutada cross joini
+select Name, Gender, Salary, DepartmentName
+from Employees
+cross join Department
+
+--päringu sisu
+select ColumnList
+from LeftTable
+joinType RightTable
+on JoinCondition
+
+selecct Name, Gender, Salary, DepartmentName
+from Employees
+inner join Department
+on Department Id = Employees.DepartmentId
+
+--kuidas kuvada ainult need isikud, kellel on DepartmentName NULL
+select Name, Gender, Salary, DepartmentName
+ from Employees
+ left join Department
+ on Employees.DepartmentId = Department.Id
+ where DepartmentName is null
+
+ select Name, Gender, Salary, DepartmentName
+ from Employees
+ left join Department
+ on Employees.DepartmentId = Department.Id
+ where Department.Id is null
+
+ --kuidas saame department tabelis oleva rea, kus on NULL
+ select Name, Gender, Salary, DepartmentName
+ from Employees
+ right join Department
+ on Employees.DepartmentId = Department.Id
+ where Employees.DepartmentId is null
+
+ --full join
+ --kus on vaja kuvada kõik read mõlemast tabelist,
+ --millel ei ole vastet
+  select Name, Gender, Salary, DepartmentName
+ from Employees
+ full join Department
+ on Employees.DepartmentId = Department.Id
+ where Employees.DepartmentId is null
+ or Department.Id is null
+
+ --tabeli nimetuse muutmine koodiga
+sp_rename 'Employees1', 'Employees'
+
+--kasutame Employees tabeli asemel lühendit E ja M
+--aga enne seda lisame uue veeru nimega ManagerId ja see on int
+alter table Employees
+add ManagerId int
+
+select E.Name as Employee, M.Name as Manager
+from Employees E
+left join Employees M
+on E.ManagerId = M.Id
+
+--inner join, kasutame lühendeid
+
+select E.Name as Employee, M.Name as Manager
+from Employees E
+inner join Employees M
+on E.ManagerId = M.Id
+
+--cross join, kasutame lühendeid
+select E.Name as Employee, M.Name as Manager
+from Employees E
+cross join Employees M
 
 
+
+select FirstName, LastName, Phone, AddressID, AddressType
+from SalesLT.CustomerAddress
+left join SalesLT.Customer
+on SalesLT.CustomerAddress.CustomerID = SalesLT.Customer.CustomerID
+
+--teha päring kus kasutate ProductModelit ja Product Tabelit,
+--et näha, millised tooted on millise mudeliga seotud
