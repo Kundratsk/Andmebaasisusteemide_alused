@@ -454,5 +454,109 @@ from SalesLT.CustomerAddress
 left join SalesLT.Customer
 on SalesLT.CustomerAddress.CustomerID = SalesLT.Customer.CustomerID
 
---teha päring kus kasutate ProductModelit ja Product Tabelit,
---et näha, millised tooted on millise mudeliga seotud
+SELECT
+	e.EmployeeKey,
+	e.FirstName,
+	c.SalesAmountQuota,
+	c.CalendarYear
+from dbo.DimEmployee e
+inner join dbo.FactSalesQuota c
+	On e.EmployeeKey = c.EmployeeKey ;
+
+
+	--left join üks veel
+Select
+	c.SalesterritoryKey,
+	c.FirstName,
+	e.SalesTerritoryRegion
+FROM dbo.DimEmployee c
+LEFT JOIN dbo.DimSalesTerritory e
+	On c.SalesTerritoryKey = e.SalesTerritoryKey;
+
+	--veel üks right join
+SELECT
+	c.DateKey,
+	c.EndOfDayRate,
+	c.AverageRate,
+	c.Date,
+	e.EnglishDayNameOfWeek
+FROM dbo.FactCurrencyRate c
+RIGHT JOIN dbo.DimDate e
+	ON c.DateKey = e.DateKey
+
+
+
+
+
+
+--inner
+SELECT 
+	c.CustomerKey,
+	c.FirstName,
+	s.SalesAmount
+from dbo.DimCustomer c
+inner join dbo.FactInternetSales s
+	On c.CustomerKey = s.CustomerKey ;
+
+	--left
+
+Select
+	c.CustomerKey,
+	c.FirstName,
+	s.SalesAmount
+FROM dbo.Dimcustomer c
+LEFT JOIN dbo.FactInternetSales s
+	ON c.CustomerKey = s.CustomerKey;
+
+
+	--right
+SELECT
+	c.CustomerKey,
+	c.FirstName,
+	s.SalesAmount
+FROM dbo.Dimcustomer c
+RIGHT JOIN dbo.FactInternetSales s
+	ON c.CustomerKey = s.Customerkey;
+
+	--outer join
+
+
+SELECT 
+	c.CustomerKey,
+	c.FirstName,
+	s.SalesAmount
+FROM dbo.DimCustomer c
+FULL OUTER JOIN dbo.FactInternetSales s
+	ON c.CustomerKey = s.CustomerKey;
+
+--cross
+SELECT
+	c.FirstName,
+	p.EnglishProductName
+FROM dbo.DimCustomer c
+CROSS JOIN dbo.DimProduct p;
+
+
+create table Students
+(
+StudentId int primary key,
+FirstName nvarchar(50),
+LastName nvarchar(50),
+Gender nvarchar(30),
+City nvarchar(50),
+email nvarchar(50)
+)
+
+insert into Students(StudentId, FirstName, LastName, Gender, City, email)
+values (1, 'Marek', 'Lepp', 'Male', 'Tartu', 'm.l@gmail.com'),
+(2, 'Tarmo', 'Tepp', 'Male', 'Põlva', 'T.T@gmail.com'),
+(3, 'Marju', 'Palju', 'Female', 'Tartu', 'M.pa@gmail.com'),
+(4, 'Mardo', 'Kask', 'Male', 'Tallinn', 'm.K@gmail.com'),
+(5, 'Mari', 'Puu', 'Female', 'Tallinn', 'M.puu@gmail.com'),
+(6, 'Merle', 'Tamm', 'Female', 'Tartu', 'm.tamm@gmail.com'),
+(7, 'Pelle', 'Kastan', 'Female', 'Jõhvi', 'pelle.k@gmail.com'),
+(8, 'Mait', 'Poolt', 'Male', 'Tapa', 'mait.p@gmail.com'),
+(9, 'Kati', 'Latt', 'Female', 'Narva', 'kati.l@gmail.com'),
+(10, 'Taimi', 'Lang', 'Female', 'Haapsalu', 'taimi.l@gmail.com');
+
+
