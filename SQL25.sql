@@ -447,7 +447,7 @@ select E.Name as Employee, M.Name as Manager
 from Employees E
 cross join Employees M
 
-
+--kontrolltöö algus
 
 select FirstName, LastName, Phone, AddressID, AddressType
 from SalesLT.CustomerAddress
@@ -558,5 +558,7 @@ values (1, 'Marek', 'Lepp', 'Male', 'Tartu', 'm.l@gmail.com'),
 (8, 'Mait', 'Poolt', 'Male', 'Tapa', 'mait.p@gmail.com'),
 (9, 'Kati', 'Latt', 'Female', 'Narva', 'kati.l@gmail.com'),
 (10, 'Taimi', 'Lang', 'Female', 'Haapsalu', 'taimi.l@gmail.com');
+-- kontrolltöö lõpp
 
 
+--11.tund 
