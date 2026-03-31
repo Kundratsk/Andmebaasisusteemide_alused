@@ -781,3 +781,37 @@ sp_helptext spGetEmployeeCountByGender
 sp_depends spGetEmployeeCountByGender
 --vaatame tabelit sp_depends-ga
 sp_depends Employees
+
+-----------------------------------------
+create proc spGetNameById
+@Id int,
+@Name nvarchar(30) output
+as begin
+	select @Id = Id, @Name = FirstName from Employees
+end
+
+--tahame näha kogu tabelite ridade arvu, countiga
+create proc spTotalCount2
+@TotalCount int output
+as begin
+	select @TotalCount = count(Id) from Employees
+end
+
+
+--saame teada, et mitu rida on tabelis
+declare @TotalEmployees int
+execute spTotalCount2 @TotalEmployees output
+select @TotalEmployees
+
+--mis id all on keegi nime järgi
+create proc spGetIdByName1
+@Id int,
+@Firstname nvarchar(30) output
+as begin
+	select @Firstname = FirstName from Employees where @Id = Id
+end
+
+--annab tulemuse, kus id 1 real on keegi koos nimega
+declare @FirstName nvarchar(30)
+execute spGetIdByName1 1, @FirstName output
+print 'Name of the employee = ' + @FirstName
