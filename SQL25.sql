@@ -815,3 +815,15 @@ end
 declare @FirstName nvarchar(30)
 execute spGetIdByName1 1, @FirstName output
 print 'Name of the employee = ' + @FirstName
+
+--
+declare
+@FirstName nvarchar(30)
+execute spGetNameById 1, @FirstName output
+print 'Name of the employee  ' + @FirstName
+/*ei anna tulemust, sest sp-s on loogika viga
+sp-s on viga, sest @Id on parameeter,
+mis on mıeldud selleks, et me saaksime sisestada id-d
+ja saada nime, aga sp-s on loogika viga, sest see
+¸ritab m‰‰rata @Id v‰‰rtuseks Id veeru v‰‰rtust, mis on vale
+*/
