@@ -817,8 +817,7 @@ execute spGetIdByName1 1, @FirstName output
 print 'Name of the employee = ' + @FirstName
 
 --
-declare
-@FirstName nvarchar(30)
+declare @FirstName nvarchar(30)
 execute spGetNameById 1, @FirstName output
 print 'Name of the employee  ' + @FirstName
 /*ei anna tulemust, sest sp-s on loogika viga
@@ -827,3 +826,21 @@ mis on mıeldud selleks, et me saaksime sisestada id-d
 ja saada nime, aga sp-s on loogika viga, sest see
 ¸ritab m‰‰rata @Id v‰‰rtuseks Id veeru v‰‰rtust, mis on vale
 */
+
+--tund 5
+--07.04.26
+declare @FirstName nvarchar(30)
+execute spGetNameById 1, @FirstName output
+print 'Name of the employee  ' + @FirstName
+
+sp_help spGetNameById
+
+create proc spGetNameById2
+@Id int
+as begin
+	return (select FirstName from Employees where Id = @Id)
+end
+
+declare @EmployeeName nvarchar(30)
+execute @EmployeeName = spGetNameById2 3
+print 'Name of the employee = ' + @EmployeeName
