@@ -841,6 +841,52 @@ as begin
 	return (select FirstName from Employees where Id = @Id)
 end
 
-declare @EmployeeName nvarchar(30)
-execute @EmployeeName = spGetNameById2 3
-print 'Name of the employee = ' + @EmployeeName
+DECLARE @FirstName NVARCHAR(30)
+EXEC spGetNameById2
+@Id = 3,
+@FirstName = @FirstName OUTPUT
+PRINT 'Name of the employee = ' + @FirstName
+--return annab ainult int tüüpi väärtust,
+--seega ei saa kasutada return-i, et tagastada nime,
+--mis on nvarchar tüüpi
+
+/*sisseehitatud string funktsioonid
+see konverteerib ASCII tähe väärtuse numbriks*/
+select ascii('A')
+--kuvab A-tähe
+select char(65)
+
+/*prindime kogu tähestiku välja a-st z-ni
+kasutame while tsüklit*/
+declare @Start int
+set @Start = 1
+while (@Start <= 122)
+begin
+	print char(@Start)
+	set @Start = @Start + 1
+end
+
+--eemaldame tühjad kohad sulgudes
+select ltrim('                 Hello')
+
+--tühikute eemaldamine sõnas
+select ltrim(FirstName) as FirstName, MiddleName, LastName
+from Employees
+
+select RTRIM('Hello                       ')
+
+/* keera kooloni sees olevad andmed vastupidiseks
+vastavalt upper ja lower-ga saan muuta märkide suurust
+reverse funktsioon keerab stringi tagurpidi*/
+
+select reverse(upper(ltrim(FirstName))) as FirstName,
+MiddleName, LOWER(LastName), rtrim(ltrim(FirstName)) + ' ' +
+MiddleName + ' ' + LastName as FullName
+from Employees
+
+/*left, right, substring
+left võtab stringi vasakult poolt neli esimest tähte*/
+select left('ABCDEF', 4)
+--right võtab stringi paremalt poolt neli esimest tähte
+select right('ABCDEF', 4)
+
