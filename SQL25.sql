@@ -1104,4 +1104,11 @@ select * from fn_MS_GetEmployees()
 -- kuna käsitletakse vaatena
 --multi statement table valued funktsioonid on nagu tavalised funkts.
 --pm on tegemist stored procedurega ja  see võib olla aeglasem
---sest see ei saa kasutada vaate optimeerimist
+--sest see ei saa kasutada vaate optimeerimist kulutab rohkem ressurssi
+
+update fn_GetEmployees() set Name = 'Sara' where Id = 4
+select * from EmployeesWithDates
+
+update fn_MS_GetEmployees() set Name = 'Sara' where Id = 4 
+-- ei saa muuta multistatement puhul, sest on nagu stored procedure
+
