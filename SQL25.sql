@@ -989,5 +989,119 @@ select SQUARE(5) -- võtab ruutu
 select SQRT(25) -- ruutjuur squareroot
 
 select RAND() * 100 -- random number 0 - 1
-select ceiling(RAND() * 100)
+select ceiling(RAND() * 100) -- 1 kuni 100
+-- annab juhusliku numbri 1-1000 ja teeb seda 10 korda
+DECLARE @Counter INT
+set @Counter =1
+WHILE (@Counter <11)
+BEGIN
+	set @Counter = @Counter + 1
+	Select CEILING(rand() * 1000) as RandomNumber
+end
 
+select ROUND(850.556, 2) --ümardab kahe komakohani
+select ROUND(850.556, 2, 1)
+select ROUND(850.556, 1) -- ümardab ühe komakohani
+select ROUND(850.556, 1, 1)
+select ROUND(850.556, -2) -- sadade kaupa
+select ROUND(850.556, -1) -- kümnete kaupa
+
+create function dbo.CalculateAge (@DOB date)
+returns int
+as begin
+declare @Age int
+
+set @Age = DATEDIFF(year, @DOB, getdate()) - 
+	case
+		when (MONTH(@DOB) > MONTH(GETDATE())) or
+			(MONTH (@DOB) = MONTH(getdate()) and DAY(@DOB) > DAY(getdate()))
+		then 1
+		else 0
+		end
+	return @Age
+end
+-----
+execute CalculateAge '10/25/1980' 
+--arvutab v'lja, kui vana on isik ja v]tab arvesse,
+--kas isiku sünnipäev on juba sel aastal olnud või mitte
+--antud juhul näitab, kes on üle 40 aasta vanad
+Select Id, Name, dbo.CalculateAge(DateOfBirth) as Age from EmployeesWithDates
+where dbo.CalculateAge(DateOfBirth) > 40
+
+--inline table valued functions
+--teha EmployeesWithDates tabelisse
+--uus veerg nimega DepartmentId int, mis arvutab vanuse välja
+--ja teine veerg on Gender nvarchar(10)
+
+alter table EmployeesWithDates
+add DepartmentId int,
+Gender nvarchar(10)
+
+update EmployeesWithDates set Gender = 'Male', DepartmentId = 1
+where Id = 1
+update EmployeesWithDates set Gender = 'Female', DepartmentId = 2
+where Id = 2
+update EmployeesWithDates set Gender = 'Male', DepartmentId = 1
+where Id = 3
+update EmployeesWithDates set Gender = 'Female', DepartmentId = 3
+where Id = 4
+insert into EmployeesWithDates (Id, Name, DateOfBirth, DepartmentId, Gender)
+values (5, 'Todd', '1978-11-29 12:59:30.670', 1, 'Male')
+
+select * from EmployeesWithDates
+
+--scalar function e skaleeritava funktsioon annab mingis vahemikus olevaid
+--väärtusi aga inline table valued function tagastab tabeli
+--ja seal ei kasuta begin ja endi vahele kirjutamist,
+--vaid lihtsalt kirjutad selecti
+
+create function fn_EmployeesByGender(@Gender nvarchar(10))
+returns table
+as
+return (select Id, Name, DateOfBirth, DepartmentId, Gender
+		from EmployeesWithDates
+		where Gender = @Gender)
+
+
+-- soovime vaadata kõiki naisi EmployeesWithDates tabelist
+select * from fn_EmployeesByGender('Female')
+
+--soovin näha ainult pam ja kasutan sama funktsiooni
+
+select * from fn_EmployeesByGender('Female')
+where Name = 'Pam'
+
+--kahest erinevast tabelist andmete võtmine ja koos kuvamine
+--esimene on funktsioon ja teine on Department tabel
+select Name, Gender, DepartmentName
+from fn_EmployeesByGender('Male') E
+join Department D on D.Id = E.DepartmentId
+
+
+--inline funktsioon
+create function fn_GetEmployees()
+returns table as
+return (select Id, Name, CAST(DateOfBirth as date)
+		as DOB
+		from EmployeesWithDates)
+
+select * from fn_GetEmployees()
+
+
+--multi statement table valued function
+create function fn_MS_GetEmployees()
+returns @Table Table (Id int, Name nvarchar(20), DOB date)
+as begin
+	insert into @Table
+	select Id, Name, CAST(DateOfBirth as date) from EmployeesWithDates
+
+	return
+end
+
+select * from fn_MS_GetEmployees()
+
+--inline tabel funktsioonid on paremini töötamas
+-- kuna käsitletakse vaatena
+--multi statement table valued funktsioonid on nagu tavalised funkts.
+--pm on tegemist stored procedurega ja  see võib olla aeglasem
+--sest see ei saa kasutada vaate optimeerimist
