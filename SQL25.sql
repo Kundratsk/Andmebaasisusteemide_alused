@@ -1723,4 +1723,45 @@ as begin
 	declare @OldDepartmentId int, @NewDepartmentId int
 	declare @OldManagerId int, @NewManagerId int
 	declare @OldFirstName nvarchar(20), @NewFirstName nvarchar(20)
-	declare @OldLastName 
+	declare @OldLastName nvarchar(20), @NewLastName nvarchar(20)
+	declare @OldEmail nvarchar(50), @NewEmail nvarchar(50)
+
+	--muutuja kuhu läheb lõpptekst
+	declare @AuditString nvarchar(1000)
+
+	--laeb koik uuendatud andmed temp tabeli alla
+	select * into #TempTable
+	from inserted
+
+	--käib läbi kõik andmed temp tabelis
+	while(exists(select IDENT_CURRENT from #TempTable))
+	begin
+		Set @AuditString = ''
+	--selekteerib esimese rea andmed temp tabel-ist
+	select top 1 @Id = Id, @NewGender = Gender,
+	@NewSalary = Salary, @NewDepartmentId = DepartmentId,
+	@NewManagerId = ManagerId, @NewFirstName = FirstName,
+	@NewMiddleName = MiddleName, @NewLastName = LastName,
+	@NewEmail = Email
+	from #TempTable
+	--võtab vanad andmed kustutatud
+	select @OldGender = Gender,
+	@OldSalary = Salary, @OldDepartmentId = DepartmentId,
+	@OldManagerId = ManagerId, @OldFirstName = FirstName,
+	@OldMiddleName = MiddleName, @OldLastName = LastName,
+	@OldEmail = Email
+	from deleted where Id = @Id 
+	--toimub võrdlus veergude osas, et kas toimus andmete muutmine
+	set @AuditString = 'Employee with Id = ' + cast(@Id as nvarchar(4)) + ' changed '
+	if(@OldGender <> @NewGender)
+		set @AuditString = @AuditString + ' Gender from ' + @OldGender + ' to ' +
+		@NewGender
+
+	if(@OldSalary <> @NewSalary)
+		set @AuditString = @AuditString + ' Salary from ' + cast(@OldSalary as nvarchar(20)
+		+ ' to ' + CAST(@NewSalary as nvarchar(10))
+		@NewGender
+
+
+
+
